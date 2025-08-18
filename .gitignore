@@ -1,0 +1,4 @@
+*.pyc
+*.pyo
+*.conf
+test_rsa.key

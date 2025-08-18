@@ -1,0 +1,33 @@
+Command executed by 10.0.2.6: hello
+Response sent to 10.0.2.6: bash: hello: command not found
+Command executed by 10.0.2.6: ifconfig
+Response sent to 10.0.2.6: 
+eth0      Link encap:Ethernet  HWaddr 00:1a:2b:3c:4d:5e  
+          inet addr:192.168.1.10  Bcast:192.168.1.255  Mask:255.255.255.0
+          inet6 addr: fe80::21a:2bff:fe3c:4d5e/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:1001928 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:865432 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:123456789 (123.4 MB)  TX bytes:987654321 (987.6 MB)
+
+lo        Link encap:Local Loopback  
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          inet6 addr: ::1/128 Scope:Host
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:123456 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:123456 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1 
+          RX bytes:9876543 (9.8 MB)  TX bytes:9876543 (9.8 MB)
+
+Command executed by 10.0.2.6: nihao
+Response sent to 10.0.2.6: bash: nihao: command not found
+
+
+Command executed by 10.0.2.6: are you machine
+Response sent to 10.0.2.6: bash
+bash: are: command not found
+
+
+
+Command executed by 10.0.2.6: exit

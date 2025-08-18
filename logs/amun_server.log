@@ -1,0 +1,312 @@
+2024-10-20 16:25:05,947 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 21
+2024-10-20 16:25:05,947 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 23
+2024-10-20 16:25:05,948 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 25
+2024-10-20 16:25:05,948 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 42
+2024-10-20 16:25:05,948 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 80
+2024-10-20 16:25:05,948 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 105
+2024-10-20 16:25:05,948 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 110
+2024-10-20 16:25:05,949 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 135
+2024-10-20 16:25:05,949 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 139
+2024-10-20 16:25:05,949 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 143
+2024-10-20 16:25:05,949 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 443
+2024-10-20 16:25:05,949 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 445
+2024-10-20 16:25:05,949 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 554
+2024-10-20 16:25:05,950 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 587
+2024-10-20 16:25:05,950 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 617
+2024-10-20 16:25:05,950 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 1023
+2024-10-20 16:25:05,950 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 1025
+2024-10-20 16:25:05,950 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 1080
+2024-10-20 16:25:05,950 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 1111
+2024-10-20 16:25:05,950 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 1581
+2024-10-20 16:25:05,950 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 1900
+2024-10-20 16:25:05,951 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 2101
+2024-10-20 16:25:05,951 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 2103
+2024-10-20 16:25:05,951 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 2105
+2024-10-20 16:25:05,951 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 2107
+2024-10-20 16:25:05,951 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 2222
+2024-10-20 16:25:05,951 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 2380
+2024-10-20 16:25:05,951 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 2555
+2024-10-20 16:25:05,951 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 2745
+2024-10-20 16:25:05,952 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 2954
+2024-10-20 16:25:05,952 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 2967
+2024-10-20 16:25:05,952 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 2968
+2024-10-20 16:25:05,952 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 3127
+2024-10-20 16:25:05,952 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 3128
+2024-10-20 16:25:05,952 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 3268
+2024-10-20 16:25:05,952 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 3372
+2024-10-20 16:25:05,952 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 3389
+2024-10-20 16:25:05,953 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 3628
+2024-10-20 16:25:05,953 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 5000
+2024-10-20 16:25:05,953 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 5168
+2024-10-20 16:25:05,953 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 5554
+2024-10-20 16:25:05,953 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 6070
+2024-10-20 16:25:05,953 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 6101
+2024-10-20 16:25:05,953 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 6129
+2024-10-20 16:25:05,954 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 6667
+2024-10-20 16:25:05,954 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 7144
+2024-10-20 16:25:05,954 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 7547
+2024-10-20 16:25:05,954 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 8080
+2024-10-20 16:25:05,954 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 9999
+2024-10-20 16:25:05,954 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 10203
+2024-10-20 16:25:05,954 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 27347
+2024-10-20 16:25:05,954 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 38292
+2024-10-20 16:25:05,955 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 41523
+2024-10-20 17:20:48,059 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 21
+2024-10-20 17:20:48,060 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 23
+2024-10-20 17:20:48,060 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 25
+2024-10-20 17:20:48,060 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 42
+2024-10-20 17:20:48,060 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 80
+2024-10-20 17:20:48,060 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 105
+2024-10-20 17:20:48,060 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 110
+2024-10-20 17:20:48,060 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 135
+2024-10-20 17:20:48,060 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 139
+2024-10-20 17:20:48,061 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 143
+2024-10-20 17:20:48,061 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 443
+2024-10-20 17:20:48,061 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 445
+2024-10-20 17:20:48,061 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 554
+2024-10-20 17:20:48,061 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 587
+2024-10-20 17:20:48,061 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 617
+2024-10-20 17:20:48,061 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 1023
+2024-10-20 17:20:48,062 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 1025
+2024-10-20 17:20:48,062 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 1080
+2024-10-20 17:20:48,062 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 1111
+2024-10-20 17:20:48,062 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 1581
+2024-10-20 17:20:48,062 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 1900
+2024-10-20 17:20:48,062 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 2101
+2024-10-20 17:20:48,063 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 2103
+2024-10-20 17:20:48,063 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 2105
+2024-10-20 17:20:48,063 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 2107
+2024-10-20 17:20:48,063 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 2222
+2024-10-20 17:20:48,063 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 2380
+2024-10-20 17:20:48,063 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 2555
+2024-10-20 17:20:48,064 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 2745
+2024-10-20 17:20:48,064 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 2954
+2024-10-20 17:20:48,064 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 2967
+2024-10-20 17:20:48,064 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 2968
+2024-10-20 17:20:48,064 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 3127
+2024-10-20 17:20:48,064 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 3128
+2024-10-20 17:20:48,064 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 3268
+2024-10-20 17:20:48,064 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 3372
+2024-10-20 17:20:48,065 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 3389
+2024-10-20 17:20:48,065 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 3628
+2024-10-20 17:20:48,065 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 5000
+2024-10-20 17:20:48,065 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 5168
+2024-10-20 17:20:48,065 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 5554
+2024-10-20 17:20:48,065 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 6070
+2024-10-20 17:20:48,065 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 6101
+2024-10-20 17:20:48,065 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 6129
+2024-10-20 17:20:48,066 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 6667
+2024-10-20 17:20:48,066 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 7144
+2024-10-20 17:20:48,066 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 7547
+2024-10-20 17:20:48,066 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 8080
+2024-10-20 17:20:48,066 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 9999
+2024-10-20 17:20:48,066 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 10203
+2024-10-20 17:20:48,066 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 27347
+2024-10-20 17:20:48,066 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 38292
+2024-10-20 17:20:48,067 INFO [amun_server] Port already in use: IP: 0.0.0.0 Port: 41523
+2024-10-20 17:21:03,169 INFO [amun_server] handle_error
+2024-10-20 17:21:03,170 INFO [amun_server] Traceback (most recent call last):
+  File "/usr/local/lib/python2.7/asyncore.py", line 108, in readwrite
+    obj.handle_read_event()
+  File "/usr/local/lib/python2.7/asyncore.py", line 443, in handle_read_event
+    self.handle_accept()
+  File "amun_server.py", line 136, in handle_accept
+    addr)
+  File "core/amun_request_handler.py", line 199, in handle_incoming_connection
+    self.handle_ssh_port_connection(socket_object)
+TypeError: handle_ssh_port_connection() takes exactly 3 arguments (2 given)
+
+2024-10-20 17:22:30,960 INFO [amun_server] handle_error
+2024-10-20 17:22:30,961 INFO [amun_server] Traceback (most recent call last):
+  File "/usr/local/lib/python2.7/asyncore.py", line 108, in readwrite
+    obj.handle_read_event()
+  File "/usr/local/lib/python2.7/asyncore.py", line 443, in handle_read_event
+    self.handle_accept()
+  File "amun_server.py", line 136, in handle_accept
+    addr)
+  File "core/amun_request_handler.py", line 199, in handle_incoming_connection
+    self.handle_ssh_port_connection(socket_object)
+  File "/usr/local/lib/python2.7/asyncore.py", line 421, in __getattr__
+    %(self.__class__.__name__, attr))
+AttributeError: amun_reqhandler instance has no attribute 'handle_ssh_port_connection'
+
+2024-10-20 17:24:13,673 INFO [amun_server] handle_error
+2024-10-20 17:24:13,674 INFO [amun_server] Traceback (most recent call last):
+  File "/usr/local/lib/python2.7/asyncore.py", line 108, in readwrite
+    obj.handle_read_event()
+  File "/usr/local/lib/python2.7/asyncore.py", line 443, in handle_read_event
+    self.handle_accept()
+  File "amun_server.py", line 136, in handle_accept
+    addr)
+  File "core/amun_request_handler.py", line 240, in handle_incoming_connection
+    self.handle_welcome()
+  File "core/amun_request_handler.py", line 318, in handle_welcome
+    self.delete_existing_connection()
+  File "core/amun_request_handler.py", line 118, in delete_existing_connection
+    (result,state) = self.handle_vulnerabilities("", item[2])
+  File "core/amun_request_handler.py", line 805, in handle_vulnerabilities
+    if not vulnResult['accept']:
+TypeError: 'NoneType' object has no attribute '__getitem__'
+
+2024-10-20 17:38:02,047 INFO [amun_server] handle_error
+2024-10-20 17:38:02,048 INFO [amun_server] Traceback (most recent call last):
+  File "/usr/local/lib/python2.7/asyncore.py", line 108, in readwrite
+    obj.handle_read_event()
+  File "/usr/local/lib/python2.7/asyncore.py", line 443, in handle_read_event
+    self.handle_accept()
+  File "amun_server.py", line 136, in handle_accept
+    addr)
+  File "core/amun_request_handler.py", line 240, in handle_incoming_connection
+    self.handle_welcome()
+  File "core/amun_request_handler.py", line 330, in handle_welcome
+    self.delete_existing_connection()
+  File "core/amun_request_handler.py", line 118, in delete_existing_connection
+    (result,state) = self.handle_vulnerabilities("", item[2])
+  File "core/amun_request_handler.py", line 817, in handle_vulnerabilities
+    if not vulnResult['accept']:
+TypeError: 'NoneType' object has no attribute '__getitem__'
+
+2024-10-20 17:42:32,330 INFO [amun_server] handle_error
+2024-10-20 17:42:32,331 INFO [amun_server] Traceback (most recent call last):
+  File "/usr/local/lib/python2.7/asyncore.py", line 108, in readwrite
+    obj.handle_read_event()
+  File "/usr/local/lib/python2.7/asyncore.py", line 443, in handle_read_event
+    self.handle_accept()
+  File "amun_server.py", line 136, in handle_accept
+    addr)
+  File "core/amun_request_handler.py", line 240, in handle_incoming_connection
+    self.handle_welcome()
+  File "core/amun_request_handler.py", line 330, in handle_welcome
+    self.delete_existing_connection()
+  File "core/amun_request_handler.py", line 118, in delete_existing_connection
+    (result,state) = self.handle_vulnerabilities("", item[2])
+  File "core/amun_request_handler.py", line 817, in handle_vulnerabilities
+    if not vulnResult['accept']:
+TypeError: 'NoneType' object has no attribute '__getitem__'
+
+2024-10-20 17:45:49,244 INFO [amun_server] handle_error
+2024-10-20 17:45:49,244 INFO [amun_server] Traceback (most recent call last):
+  File "/usr/local/lib/python2.7/asyncore.py", line 108, in readwrite
+    obj.handle_read_event()
+  File "/usr/local/lib/python2.7/asyncore.py", line 443, in handle_read_event
+    self.handle_accept()
+  File "amun_server.py", line 136, in handle_accept
+    addr)
+  File "core/amun_request_handler.py", line 240, in handle_incoming_connection
+    self.handle_welcome()
+  File "core/amun_request_handler.py", line 330, in handle_welcome
+    self.delete_existing_connection()
+  File "core/amun_request_handler.py", line 118, in delete_existing_connection
+    (result,state) = self.handle_vulnerabilities("", item[2])
+  File "core/amun_request_handler.py", line 817, in handle_vulnerabilities
+    if not vulnResult['accept']:
+TypeError: 'NoneType' object has no attribute '__getitem__'
+
+2024-10-20 18:01:38,561 INFO [amun_server] handle_error
+2024-10-20 18:01:38,562 INFO [amun_server] Traceback (most recent call last):
+  File "/usr/local/lib/python2.7/asyncore.py", line 108, in readwrite
+    obj.handle_read_event()
+  File "/usr/local/lib/python2.7/asyncore.py", line 443, in handle_read_event
+    self.handle_accept()
+  File "amun_server.py", line 136, in handle_accept
+    addr)
+  File "core/amun_request_handler.py", line 240, in handle_incoming_connection
+    self.handle_welcome()
+  File "core/amun_request_handler.py", line 330, in handle_welcome
+    self.delete_existing_connection()
+  File "core/amun_request_handler.py", line 118, in delete_existing_connection
+    (result,state) = self.handle_vulnerabilities("", item[2])
+  File "core/amun_request_handler.py", line 817, in handle_vulnerabilities
+    if not vulnResult['accept']:
+TypeError: 'NoneType' object has no attribute '__getitem__'
+
+2024-10-20 18:04:58,960 INFO [amun_server] handle_error
+2024-10-20 18:04:58,961 INFO [amun_server] Traceback (most recent call last):
+  File "/usr/local/lib/python2.7/asyncore.py", line 108, in readwrite
+    obj.handle_read_event()
+  File "/usr/local/lib/python2.7/asyncore.py", line 443, in handle_read_event
+    self.handle_accept()
+  File "amun_server.py", line 136, in handle_accept
+    addr)
+  File "core/amun_request_handler.py", line 240, in handle_incoming_connection
+    self.handle_welcome()
+  File "core/amun_request_handler.py", line 334, in handle_welcome
+    self.delete_existing_connection()
+  File "core/amun_request_handler.py", line 118, in delete_existing_connection
+    (result,state) = self.handle_vulnerabilities("", item[2])
+  File "core/amun_request_handler.py", line 821, in handle_vulnerabilities
+    if not vulnResult['accept']:
+TypeError: 'NoneType' object has no attribute '__getitem__'
+
+2024-10-20 18:08:52,845 INFO [amun_server] handle_error
+2024-10-20 18:08:52,846 INFO [amun_server] Traceback (most recent call last):
+  File "/usr/local/lib/python2.7/asyncore.py", line 108, in readwrite
+    obj.handle_read_event()
+  File "/usr/local/lib/python2.7/asyncore.py", line 443, in handle_read_event
+    self.handle_accept()
+  File "amun_server.py", line 136, in handle_accept
+    addr)
+  File "core/amun_request_handler.py", line 240, in handle_incoming_connection
+    self.handle_welcome()
+  File "core/amun_request_handler.py", line 334, in handle_welcome
+    self.delete_existing_connection()
+  File "core/amun_request_handler.py", line 118, in delete_existing_connection
+    (result,state) = self.handle_vulnerabilities("", item[2])
+  File "core/amun_request_handler.py", line 821, in handle_vulnerabilities
+    if not vulnResult['accept']:
+TypeError: 'NoneType' object has no attribute '__getitem__'
+
+2024-10-20 18:18:32,178 INFO [amun_server] handle_error
+2024-10-20 18:18:32,179 INFO [amun_server] Traceback (most recent call last):
+  File "/usr/local/lib/python2.7/asyncore.py", line 108, in readwrite
+    obj.handle_read_event()
+  File "/usr/local/lib/python2.7/asyncore.py", line 443, in handle_read_event
+    self.handle_accept()
+  File "amun_server.py", line 136, in handle_accept
+    addr)
+  File "core/amun_request_handler.py", line 240, in handle_incoming_connection
+    self.handle_welcome()
+  File "core/amun_request_handler.py", line 345, in handle_welcome
+    self.delete_existing_connection()
+  File "core/amun_request_handler.py", line 118, in delete_existing_connection
+    (result,state) = self.handle_vulnerabilities("", item[2])
+  File "core/amun_request_handler.py", line 832, in handle_vulnerabilities
+    if not vulnResult['accept']:
+TypeError: 'NoneType' object has no attribute '__getitem__'
+
+2024-10-20 18:20:44,749 INFO [amun_server] handle_error
+2024-10-20 18:20:44,750 INFO [amun_server] Traceback (most recent call last):
+  File "/usr/local/lib/python2.7/asyncore.py", line 108, in readwrite
+    obj.handle_read_event()
+  File "/usr/local/lib/python2.7/asyncore.py", line 443, in handle_read_event
+    self.handle_accept()
+  File "amun_server.py", line 136, in handle_accept
+    addr)
+  File "core/amun_request_handler.py", line 240, in handle_incoming_connection
+    self.handle_welcome()
+  File "core/amun_request_handler.py", line 337, in handle_welcome
+    self.delete_existing_connection()
+  File "core/amun_request_handler.py", line 118, in delete_existing_connection
+    (result,state) = self.handle_vulnerabilities("", item[2])
+  File "core/amun_request_handler.py", line 824, in handle_vulnerabilities
+    if not vulnResult['accept']:
+TypeError: 'NoneType' object has no attribute '__getitem__'
+
+2024-10-20 18:26:49,432 INFO [amun_server] handle_error
+2024-10-20 18:26:49,433 INFO [amun_server] Traceback (most recent call last):
+  File "/usr/local/lib/python2.7/asyncore.py", line 108, in readwrite
+    obj.handle_read_event()
+  File "/usr/local/lib/python2.7/asyncore.py", line 443, in handle_read_event
+    self.handle_accept()
+  File "amun_server.py", line 136, in handle_accept
+    addr)
+  File "core/amun_request_handler.py", line 240, in handle_incoming_connection
+    self.handle_welcome()
+  File "core/amun_request_handler.py", line 337, in handle_welcome
+    self.delete_existing_connection()
+  File "core/amun_request_handler.py", line 118, in delete_existing_connection
+    (result,state) = self.handle_vulnerabilities("", item[2])
+  File "core/amun_request_handler.py", line 824, in handle_vulnerabilities
+    if not vulnResult['accept']:
+TypeError: 'NoneType' object has no attribute '__getitem__'
+
