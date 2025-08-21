@@ -1,7 +1,9 @@
+# hpa_manager.py
 import json
 import os
 from typing import List, Tuple, Dict, Optional
 from collections import deque
+from datetime import datetime
 
 HPA_DEFAULT_PATH = os.environ.get("HPA_JSON_PATH", "hpa.json")
 EPSILON = 1e-8
@@ -38,27 +40,20 @@ class HPA:
         return float(macro_obj.get("micro_probs", {}).get(micro, 0.0))
 
     def path_probability(self, path: List[Tuple[str,str]]) -> float:
-        """Compute probability of a (macro,micro) path with HPA update for new micro."""
+        """
+        Compute probability of a (macro,micro) path.
+        不在这里动态更新 HPA，保证 blocker.py 一次性更新。
+        """
         if not path:
             return 0.0
         prob = 1.0
         for i, (macro, micro) in enumerate(path):
             macro_obj = self.get_macro(macro)
-            mp = macro_obj.get("micro_probs", {}).get(micro)
-            if mp is None:
-                # micro 不在 HPA → 动态加入并归一化
-                self.update_from_session([(macro, micro)], weight=1.0)
-                macro_obj = self.get_macro(macro)
-                mp = macro_obj.get("micro_probs", {}).get(micro, EPSILON)
+            mp = macro_obj.get("micro_probs", {}).get(micro, EPSILON)
             prob *= mp
             if i + 1 < len(path):
                 next_macro = path[i+1][0]
-                sp = macro_obj.get("to_macros", {}).get(next_macro)
-                if sp is None:
-                    # dst macro 不在 HPA → 动态加入
-                    self.update_from_session([(macro, micro), (next_macro, "none")], weight=1.0)
-                    macro_obj = self.get_macro(macro)
-                    sp = macro_obj.get("to_macros", {}).get(next_macro, EPSILON)
+                sp = macro_obj.get("to_macros", {}).get(next_macro, EPSILON)
                 prob *= sp
         return prob
 
@@ -86,17 +81,21 @@ class HPA:
         return best_prob
 
     def compute_payoff_ratio(self, current_path: List[Tuple[str,str]], lookahead_depth=6):
+        """
+        计算当前 session path 的 payoff。
+        如果是完全新路径，返回 "new_path"。
+        """
         if not current_path:
             return 0.0
         macros_in_hpa = set(self.hpa.get("macros", {}).keys())
         macros_in_path = set(m for m, _ in current_path)
 
+        # 完全新路径
         if macros_in_path.isdisjoint(macros_in_hpa):
             return "new_path"
 
-        if not macros_in_path.issubset(macros_in_hpa):
-            self.update_from_session(current_path, weight=1.0)
-
+        # 遇到部分新 macro 或 micro 时，由 blocker.py 调用 update_from_session
+        # 这里不再更新，保持只读
         current_prob = self.path_probability(current_path)
         src_macro = current_path[0][0]
         best_prob = self.best_path_probability_between(src_macro, None, max_depth=lookahead_depth)
@@ -105,9 +104,12 @@ class HPA:
         return float(current_prob) / float(best_prob)
 
     def update_from_session(self, session_path: List[Tuple[str,str]], weight: float = 1.0):
-        """Update HPA with new macro/micro and normalize probabilities."""
+        """
+        Update HPA with new macro/micro and normalize probabilities.
+        """
         counts = self.hpa.setdefault("_counts", {})
         macros_counts = counts.setdefault("macros", {})
+
         for i, (macro, micro) in enumerate(session_path):
             macro_counts = macros_counts.setdefault(macro, {"to_macros": {}, "micro": {}})
             macro_counts["micro"][micro] = macro_counts["micro"].get(micro, 0.0) + weight
@@ -115,6 +117,7 @@ class HPA:
                 next_macro = session_path[i+1][0]
                 macro_counts["to_macros"][next_macro] = macro_counts["to_macros"].get(next_macro, 0.0) + weight
 
+        # 归一化
         for macro, val in macros_counts.items():
             micro_counts = val.get("micro", {})
             tot_m = sum(micro_counts.values()) or 1.0
@@ -125,5 +128,7 @@ class HPA:
                 macro_entry.setdefault("micro_probs", {})[mkey] = cnt / tot_m
             for tk, cnt in to_counts.items():
                 macro_entry.setdefault("to_macros", {})[tk] = cnt / tot_t
-        self.hpa.setdefault("meta", {})["last_updated"] = __import__("datetime").datetime.utcnow().isoformat() + "Z"
+
+        self.hpa.setdefault("meta", {})["last_updated"] = datetime.utcnow().isoformat() + "Z"
+
 
