@@ -22,25 +22,23 @@ def should_block(hpa: HPA, session_id: str, session_path: List[Tuple[str,str]]) 
     3. 部分新状态或已知路径 → 计算 payoff, payoff > 阈值则阻断
     """
     debug = {"session_id": session_id, "path_len": len(session_path)}
-    
+
     if len(session_path) < MIN_STEPS_BEFORE_BLOCK:
-        debug["reason"] = "too_short"
-        debug["decision"] = False
+        debug.update({"reason": "too_short", "decision": False})
         return False, debug
+
+    # 先将新状态更新到 HPA（避免 compute_payoff_ratio 内重复更新）
+    hpa.update_from_session(session_path)
 
     payoff = hpa.compute_payoff_ratio(session_path)
-    debug["payoff"] = payoff
-    debug["threshold"] = PAYOFF_THRESHOLD
+    debug.update({"payoff": payoff, "threshold": PAYOFF_THRESHOLD})
 
     if payoff == "new_path":
-        # 完全新路径，直接允许通行
-        debug["reason"] = "new_path_allowed"
-        debug["decision"] = False
+        debug.update({"reason": "new_path_allowed", "decision": False})
         return False, debug
 
-    # 部分新状态或完全已知路径 → 根据 payoff 阈值决定
     decision = float(payoff) >= PAYOFF_THRESHOLD
-    debug["decision"] = decision
+    debug.update({"decision": decision})
 
     if decision:
         debug["reason"] = "payoff_exceeded"
