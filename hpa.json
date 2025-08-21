@@ -1,0 +1,12 @@
+{
+  "macros": {
+    "sshd": {
+      "to_macros": {"ls": 0.5, "cat": 0.5},
+      "micro_probs": {"none": 1.0}
+    },
+    "ls": {"to_macros": {}, "micro_probs": {"none": 1.0}},
+    "cat": {"to_macros": {}, "micro_probs": {"none": 1.0}}
+  },
+  "global": {"exposure": 1.0},
+  "meta": {}
+}
