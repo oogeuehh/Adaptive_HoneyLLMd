@@ -106,9 +106,11 @@ def execute_command_get():
     session = request.args.get('session', 'unknown-session')
     extracted_cmd = extract_command_from_amun_log(command)
     if extracted_cmd: command = extracted_cmd
+
     subs = split_commands(command)
     active = subs[-1] if subs else command
     macro, micro = parse_command(active)
+
     sp = session_paths.setdefault(session, [])
     sp.append((macro, micro))
 
@@ -116,11 +118,16 @@ def execute_command_get():
     decision, debug = should_block(hpa, session, sp)
     print("HPA debug:", json.dumps(debug, ensure_ascii=False))
 
-    if decision: return fake_block_response(command)
+    if decision:
+        return fake_block_response(command)
+
     local = run_command_local(command)
-    if local is not None: return local
+    if local is not None:
+        return local
+
     llm_out = get_response_from_llm(command)
-    if llm_out is None: return f"bash: {command.split()[0]}: command not found\n"
+    if llm_out is None:
+        return f"bash: {command.split()[0]}: command not found\n"
     return llm_out + "\n"
 
 if __name__ == '__main__':
