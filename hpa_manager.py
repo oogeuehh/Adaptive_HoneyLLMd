@@ -1,4 +1,3 @@
-# hpa_manager.py
 import json
 import os
 from typing import List, Tuple, Dict, Optional
@@ -11,7 +10,7 @@ EPSILON = 1e-8
 class HPA:
     def __init__(self, path: str = HPA_DEFAULT_PATH):
         self.path = path
-        self.hpa = {"macros": {}, "global": {"exposure": 1.0}, "meta": {}}
+        self.hpa = {"macros": {}, "meta": {}}
         if os.path.exists(self.path):
             self.load(self.path)
 
@@ -20,7 +19,6 @@ class HPA:
         with open(path, "r", encoding="utf-8") as f:
             self.hpa = json.load(f)
         self.hpa.setdefault("macros", {})
-        self.hpa.setdefault("global", {"exposure": 1.0})
         return self.hpa
 
     def save(self, path: str = None):
@@ -31,21 +29,8 @@ class HPA:
     def get_macro(self, macro: str) -> Dict:
         return self.hpa.get("macros", {}).get(macro, {"to_macros": {}, "micro_probs": {}})
 
-    def step_prob(self, from_macro: str, to_macro: str) -> float:
-        macro = self.get_macro(from_macro)
-        return float(macro.get("to_macros", {}).get(to_macro, 0.0))
-
-    def micro_prob(self, macro: str, micro: str) -> float:
-        macro_obj = self.get_macro(macro)
-        return float(macro_obj.get("micro_probs", {}).get(micro, 0.0))
-
     def path_probability(self, path: List[Tuple[str,str]]) -> float:
-        """
-        Compute probability of a (macro,micro) path.
-        不在这里动态更新 HPA，保证 blocker.py 一次性更新。
-        """
-        if not path:
-            return 0.0
+        if not path: return 0.0
         prob = 1.0
         for i, (macro, micro) in enumerate(path):
             macro_obj = self.get_macro(macro)
@@ -57,56 +42,29 @@ class HPA:
                 prob *= sp
         return prob
 
-    def best_path_probability_between(self, src_macro: str, dst_macro: Optional[str], max_depth=6) -> float:
-        """Approximate best path probability using greedy search."""
+    def best_path_probability(self, src_macro: str, max_depth=6) -> float:
+        """Greedy搜索某macro出发的最优路径概率"""
         best_prob = 0.0
-        queue = deque()
-        queue.append((src_macro, 1.0, 0))
+        queue = deque([(src_macro, 1.0, 0)])
         while queue:
             macro, prob_prod, depth = queue.popleft()
-            if dst_macro and macro == dst_macro:
-                best_prob = max(best_prob, prob_prod)
-            if depth >= max_depth:
-                if not dst_macro:
-                    best_prob = max(best_prob, prob_prod)
-                continue
+            best_prob = max(best_prob, prob_prod)
+            if depth >= max_depth: continue
             macro_obj = self.get_macro(macro)
             max_mp = max(macro_obj.get("micro_probs", {}).values(), default=1.0)
             for nxt_macro, sp in macro_obj.get("to_macros", {}).items():
-                if sp <= 0:
-                    continue
-                new_prob = prob_prod * sp * max_mp
-                queue.append((nxt_macro, new_prob, depth+1))
-                best_prob = max(best_prob, new_prob)
-        return best_prob
+                if sp <= 0: continue
+                queue.append((nxt_macro, prob_prod * sp * max_mp, depth+1))
+        return best_prob if best_prob > 0 else EPSILON
 
-    def compute_payoff_ratio(self, current_path: List[Tuple[str,str]], lookahead_depth=6):
-        """
-        计算当前 session path 的 payoff。
-        如果是完全新路径，返回 "new_path"。
-        """
-        if not current_path:
-            return 0.0
-        macros_in_hpa = set(self.hpa.get("macros", {}).keys())
-        macros_in_path = set(m for m, _ in current_path)
-
-        # 完全新路径
-        if macros_in_path.isdisjoint(macros_in_hpa):
-            return "new_path"
-
-        # 遇到部分新 macro 或 micro 时，由 blocker.py 调用 update_from_session
-        # 这里不再更新，保持只读
-        current_prob = self.path_probability(current_path)
+    def compute_payoff_ratio(self, current_path: List[Tuple[str,str]]) -> float:
+        if not current_path: return 0.0
         src_macro = current_path[0][0]
-        best_prob = self.best_path_probability_between(src_macro, None, max_depth=lookahead_depth)
-        if best_prob <= 0:
-            return float("inf") if current_prob > 0 else 0.0
-        return float(current_prob) / float(best_prob)
+        current_prob = self.path_probability(current_path)
+        best_prob = self.best_path_probability(src_macro)
+        return current_prob / best_prob if best_prob > 0 else 0.0
 
     def update_from_session(self, session_path: List[Tuple[str,str]], weight: float = 1.0):
-        """
-        Update HPA with new macro/micro and normalize probabilities.
-        """
         counts = self.hpa.setdefault("_counts", {})
         macros_counts = counts.setdefault("macros", {})
 
@@ -117,7 +75,7 @@ class HPA:
                 next_macro = session_path[i+1][0]
                 macro_counts["to_macros"][next_macro] = macro_counts["to_macros"].get(next_macro, 0.0) + weight
 
-        # 归一化
+        # normalize
         for macro, val in macros_counts.items():
             micro_counts = val.get("micro", {})
             tot_m = sum(micro_counts.values()) or 1.0
@@ -125,10 +83,8 @@ class HPA:
             tot_t = sum(to_counts.values()) or 1.0
             macro_entry = self.hpa.setdefault("macros", {}).setdefault(macro, {"micro_probs": {}, "to_macros": {}})
             for mkey, cnt in micro_counts.items():
-                macro_entry.setdefault("micro_probs", {})[mkey] = cnt / tot_m
+                macro_entry["micro_probs"][mkey] = cnt / tot_m
             for tk, cnt in to_counts.items():
-                macro_entry.setdefault("to_macros", {})[tk] = cnt / tot_t
+                macro_entry["to_macros"][tk] = cnt / tot_t
 
         self.hpa.setdefault("meta", {})["last_updated"] = datetime.utcnow().isoformat() + "Z"
-
-
