@@ -5,65 +5,46 @@ import sys
 import requests  # type: ignore
 from openai import OpenAI  # type: ignore
 from flask import Flask, request  # type: ignore
-
-# === import HPA & Blocker ===
 from hpa_manager import HPA
 from blocker import should_block
-
-def parse_command_to_macro_micro(command: str):
-    """command --> (macro, micro)"""
-    parts = command.split(None, 1)
-    macro = parts[0]
-    micro = parts[1] if len(parts) > 1 else "none"
-    return macro, micro
-# =================================
+import uuid
 
 API_KEY = "sk-i2GQTkZ4h1XuFaYtPmMEAziCNZNY0zfcNCTQwwhDVy7lSJdp"
 BASE_URL = "https://api.chatanywhere.tech"
 MODEL = "gpt-4o-mini"
 
-# llm api responses
+hpa = HPA()
+
+session_map = {}  # session_id
+
 def get_response(message):
     client = OpenAI(
         api_key=API_KEY,
         base_url=BASE_URL
     )
     messages = [
-            {
-                "role": "system",
-                "content": (
-                    "You are a shell with system information Linux svr04 3.2.0-4-amd64 "
-                    "#1 SMP Debian 3.2.68-1+deb7u1 x86_64 GNU/Linux with distribution "
-                    "Debian GNU/Linux 8.11 (jessie), now that you need to simulate a "
-                    "bash shell, your output should look as if you executed this command, "
-                    "and you should not output any other text that is not part of the "
-                    "response of this command"
-                ),
-            },
-            {
-                "role": "user",
-                "content": message,
-            },
-        ]
+        {
+            "role": "system",
+            "content": (
+                "You are a shell with system information Linux svr04 3.2.0-4-amd64 #1 SMP Debian 3.2.68-1+deb7u1 x86_64 GNU/Linux with distribution Debian GNU/Linux 8.11 (jessie), now that you need to simulate a bash shell, your output should look as if you executed this command, and you should not output any other text that is not part of the response of this command"
+            ),
+        },
+        {
+            "role": "user",
+            "content": message,
+        },
+    ]
     try:
         response = client.chat.completions.create(
             model=MODEL,
             messages=messages
         )
-        print(response.choices[0].message.content)
         return response.choices[0].message.content
     except Exception as e:
         print(e)
         return 0
 
-
 def run_command(command):
-    # === block --> reject ===
-    macro, micro = parse_command_to_macro_micro(command)
-    if should_block(macro, micro):
-        return "bash: permission denied\n"
-    # ============ LLM responses ============
-
     if command == "uname -a":
         return "Linux svr04 3.2.0-4-amd64 #1 SMP Debian 3.2.68-1+deb7u1 x86_64 GNU/Linux\n"
     elif command == "lsb_release -a":
@@ -134,7 +115,7 @@ def run_command(command):
         except FileNotFoundError:
             return f"cat: {filename}: No such file or directory\n"
     elif command.startswith("ls"):
-        command += " "
+        command+=" "
         path = command.split(" ")[1]
         if path == "":
             path = "."
@@ -159,13 +140,11 @@ def run_command(command):
         return "root\n"
     else:
         llm_response = get_response(command)
-        if llm_response == 0:
+        if llm_response==0:
             command = command.split(" ")[0]
             return f"bash: {command}: command not found\n"
-        return llm_response + '\n'
+        return llm_response+'\n'
 
-
-# 创建模拟的文件和目录结构
 def create_files():
     os.makedirs(os.path.join('.', 'etc'), exist_ok=True)
     os.makedirs(os.path.join('.', 'var', 'log'), exist_ok=True)
@@ -221,7 +200,6 @@ def create_files():
                 "gnats:*:17837:0:99999:7:::\n"
                 "nobody:*:17837:0:99999:7:::\n")
 
-    os.makedirs(os.path.join('.', 'etc', 'network'), exist_ok=True)
     with open(os.path.join('.', 'etc', 'network', 'interfaces'), 'w') as f:
         f.write("# This file describes the network interfaces available on your system\n"
                 "# and how to activate them. For more information, see interfaces(5).\n"
@@ -239,17 +217,126 @@ def create_files():
                 "nameserver 8.8.4.4\n")
 
 
+def split_commands(cmd: str):
+    result = []
+    current = ''
+    i = 0
+    length = len(cmd)
+    in_single_quote = False
+    in_double_quote = False
+    brace_level = 0
+
+    while i < length:
+        char = cmd[i]
+
+        # quote state judgement
+        if char == "'" and not in_double_quote:
+            in_single_quote = not in_single_quote
+        elif char == '"' and not in_single_quote:
+            in_double_quote = not in_double_quote
+        elif char == '{' and not in_single_quote and not in_double_quote:
+            brace_level += 1
+        elif char == '}' and not in_single_quote and not in_double_quote:
+            brace_level = max(0, brace_level - 1)
+
+        # splite or not
+        if not in_single_quote and not in_double_quote and brace_level == 0:
+            # `&&`
+            if cmd[i:i+2] == '&&':
+                result.append(current.strip())
+                current = ''
+                i += 2
+                continue
+            #  `||`
+            elif cmd[i:i+2] == '||':
+                result.append(current.strip())
+                current = ''
+                i += 2
+                continue
+            #  `;` or `|`
+            elif char in [';', '|']:
+                result.append(current.strip())
+                current = ''
+                i += 1
+                continue
+
+        # Accumulative char
+        current += char
+        i += 1
+
+    if current.strip():
+        result.append(current.strip())
+
+    return result
+
+
+# extract macro & micro state
+def parse_command(cmd: str):
+    """
+    input: sub command (string)
+    output: List of (macro, micro) pairs
+    """
+    # remove parentheses
+    cmd = cmd.replace('(', '').replace(')', '')
+
+    commands = split_commands(cmd)
+    result = []
+
+    for sub_cmd in commands:
+        sub_cmd = sub_cmd.strip()
+        if not sub_cmd:
+            continue
+
+        parts = sub_cmd.split(None, 1)  # split on any whitespace, at most 1 split
+        macro = parts[0]
+        micro = parts[1].strip() if len(parts) > 1 and parts[1].strip() else "none"
+
+        result.append((macro, micro))
+
+    return result
+
+
+def execute_with_hpa(cmd: str, dialog_id: str):
+    if dialog_id not in session_map:
+        session_map[dialog_id] = str(uuid.uuid4())
+    session_id = session_map[dialog_id]
+
+    commands = split_commands(cmd)
+    output = ""
+
+    for position, command in enumerate(commands):
+        macro, micro = parse_command(command)
+
+        matched = hpa.match_hpa(position, macro, micro)
+        hpa.update_src_and_dst(session_id, src=0, dst=position, blocked=False)
+
+        if should_block(hpa, session_id, [(position, macro, micro)], src=0, dst=position, matched=matched):
+            output += "bash: permission denied\n"
+        else:
+            if not matched:
+                hpa.update_hpa(position, macro, micro)
+            output += run_command(command)
+
+    return output
+
+# --------------------------------------
+# Flask API
+# --------------------------------------
 app = Flask(__name__)
 
 @app.route('/execute', methods=['GET'])
 def execute_command_get():
     command = request.args.get('command')
-    output = run_command(command)
+    dialog_id = request.args.get('dialog_id', 'default')
+    output = execute_with_hpa(command, dialog_id)
     return output
 
-def test(command):
+# --------------------------------------
+# test
+# --------------------------------------
+def test(command, dialog_id='default'):
     url = "http://127.0.0.1:12345/execute"
-    params = {"command": command}
+    params = {"command": command, "dialog_id": dialog_id}
     response = requests.get(url, params=params)
     print(response.text)
 
