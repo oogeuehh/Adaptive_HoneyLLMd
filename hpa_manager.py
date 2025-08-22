@@ -1,90 +1,63 @@
+# hpa_manager.py
 import json
+import pandas as pd
 import os
-from typing import List, Tuple, Dict, Optional
-from collections import deque
-from datetime import datetime
+from collections import defaultdict
 
-HPA_DEFAULT_PATH = os.environ.get("HPA_JSON_PATH", "hpa.json")
-EPSILON = 1e-8
+HPA_JSON_PATH = os.environ.get("HPA_JSON_PATH", "hpa.json")
 
 class HPA:
-    def __init__(self, path: str = HPA_DEFAULT_PATH):
+    def __init__(self, path=HPA_JSON_PATH):
         self.path = path
-        self.hpa = {"macros": {}, "meta": {}}
-        if os.path.exists(self.path):
-            self.load(self.path)
+        if os.path.exists(path):
+            with open(path, "r") as f:
+                self.hpa = json.load(f)
+        else:
+            self.hpa = {"macro": {}, "micro": {}}
 
-    def load(self, path: str = None):
-        path = path or self.path
-        with open(path, "r", encoding="utf-8") as f:
-            self.hpa = json.load(f)
-        self.hpa.setdefault("macros", {})
-        return self.hpa
+    @staticmethod
+    def from_csv(macro_csv, micro_csv, out_json="hpa.json"):
+        macro_df = pd.read_csv(macro_csv)
+        micro_df = pd.read_csv(micro_csv)
 
-    def save(self, path: str = None):
-        path = path or self.path
-        with open(path, "w", encoding="utf-8") as f:
-            json.dump(self.hpa, f, indent=2, ensure_ascii=False)
+        hpa = {"macro": defaultdict(dict), "micro": defaultdict(dict)}
 
-    def get_macro(self, macro: str) -> Dict:
-        return self.hpa.get("macros", {}).get(macro, {"to_macros": {}, "micro_probs": {}})
+        # 宏观转移
+        for _, row in macro_df.iterrows():
+            src = row["from_macro"]
+            dst = row["to_macro"]
+            prob = row["prob"]
+            hpa["macro"][src][dst] = {"count": row["count"], "prob": prob}
 
-    def path_probability(self, path: List[Tuple[str,str]]) -> float:
-        if not path: return 0.0
-        prob = 1.0
-        for i, (macro, micro) in enumerate(path):
-            macro_obj = self.get_macro(macro)
-            mp = macro_obj.get("micro_probs", {}).get(micro, EPSILON)
-            prob *= mp
-            if i + 1 < len(path):
-                next_macro = path[i+1][0]
-                sp = macro_obj.get("to_macros", {}).get(next_macro, EPSILON)
-                prob *= sp
-        return prob
+        # 微观转移
+        for _, row in micro_df.iterrows():
+            macro = row["macro"]
+            micro = row["micro"]
+            prob = row["prob"]
+            hpa["micro"][macro][micro] = {"count": row["count"], "prob": prob}
 
-    def best_path_probability(self, src_macro: str, max_depth=6) -> float:
-        """Greedy搜索某macro出发的最优路径概率"""
-        best_prob = 0.0
-        queue = deque([(src_macro, 1.0, 0)])
-        while queue:
-            macro, prob_prod, depth = queue.popleft()
-            best_prob = max(best_prob, prob_prod)
-            if depth >= max_depth: continue
-            macro_obj = self.get_macro(macro)
-            max_mp = max(macro_obj.get("micro_probs", {}).values(), default=1.0)
-            for nxt_macro, sp in macro_obj.get("to_macros", {}).items():
-                if sp <= 0: continue
-                queue.append((nxt_macro, prob_prod * sp * max_mp, depth+1))
-        return best_prob if best_prob > 0 else EPSILON
+        # 保存
+        with open(out_json, "w") as f:
+            json.dump(hpa, f, indent=2)
+        return out_json
 
-    def compute_payoff_ratio(self, current_path: List[Tuple[str,str]]) -> float:
-        if not current_path: return 0.0
-        src_macro = current_path[0][0]
-        current_prob = self.path_probability(current_path)
-        best_prob = self.best_path_probability(src_macro)
-        return current_prob / best_prob if best_prob > 0 else 0.0
+    def save(self):
+        with open(self.path, "w") as f:
+            json.dump(self.hpa, f, indent=2)
 
-    def update_from_session(self, session_path: List[Tuple[str,str]], weight: float = 1.0):
-        counts = self.hpa.setdefault("_counts", {})
-        macros_counts = counts.setdefault("macros", {})
+    def update_transition(self, macro, micro):
+        """ 更新HPA：如果不存在，新增；存在则计数+1并重算概率 """
+        # 更新 micro
+        if macro not in self.hpa["micro"]:
+            self.hpa["micro"][macro] = {}
+        if micro not in self.hpa["micro"][macro]:
+            self.hpa["micro"][macro][micro] = {"count": 0, "prob": 0.0}
+        self.hpa["micro"][macro][micro]["count"] += 1
 
-        for i, (macro, micro) in enumerate(session_path):
-            macro_counts = macros_counts.setdefault(macro, {"to_macros": {}, "micro": {}})
-            macro_counts["micro"][micro] = macro_counts["micro"].get(micro, 0.0) + weight
-            if i + 1 < len(session_path):
-                next_macro = session_path[i+1][0]
-                macro_counts["to_macros"][next_macro] = macro_counts["to_macros"].get(next_macro, 0.0) + weight
+        # 重新计算概率
+        total = sum(v["count"] for v in self.hpa["micro"][macro].values())
+        for m, v in self.hpa["micro"][macro].items():
+            v["prob"] = v["count"] / total
 
-        # normalize
-        for macro, val in macros_counts.items():
-            micro_counts = val.get("micro", {})
-            tot_m = sum(micro_counts.values()) or 1.0
-            to_counts = val.get("to_macros", {})
-            tot_t = sum(to_counts.values()) or 1.0
-            macro_entry = self.hpa.setdefault("macros", {}).setdefault(macro, {"micro_probs": {}, "to_macros": {}})
-            for mkey, cnt in micro_counts.items():
-                macro_entry["micro_probs"][mkey] = cnt / tot_m
-            for tk, cnt in to_counts.items():
-                macro_entry["to_macros"][tk] = cnt / tot_t
+        self.save()
 
-        self.hpa.setdefault("meta", {})["last_updated"] = datetime.utcnow().isoformat() + "Z"
