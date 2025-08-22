@@ -6,12 +6,12 @@ import requests  # type: ignore
 from openai import OpenAI  # type: ignore
 from flask import Flask, request  # type: ignore
 
-# === 新增: HPA管理 & 阻断逻辑 ===
+# === import HPA & Blocker ===
 from hpa_manager import HPA
 from blocker import should_block
 
 def parse_command_to_macro_micro(command: str):
-    """把命令拆分为 (macro, micro)"""
+    """command --> (macro, micro)"""
     parts = command.split(None, 1)
     macro = parts[0]
     micro = parts[1] if len(parts) > 1 else "none"
@@ -58,11 +58,11 @@ def get_response(message):
 
 
 def run_command(command):
-    # === 新增: HPA阻断逻辑 ===
+    # === block --> reject ===
     macro, micro = parse_command_to_macro_micro(command)
     if should_block(macro, micro):
         return "bash: permission denied\n"
-    # ==========================
+    # ============ LLM responses ============
 
     if command == "uname -a":
         return "Linux svr04 3.2.0-4-amd64 #1 SMP Debian 3.2.68-1+deb7u1 x86_64 GNU/Linux\n"
