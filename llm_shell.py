@@ -1,136 +1,257 @@
-# llm_shell_amun.py
-import os
 import json
+import os
+import socket
 import sys
-import re
-from flask import Flask, request
-from openai import OpenAI
+import requests  # type: ignore
+from openai import OpenAI  # type: ignore
+from flask import Flask, request  # type: ignore
+
+# === 新增: HPA管理 & 阻断逻辑 ===
 from hpa_manager import HPA
 from blocker import should_block
 
-API_KEY = os.environ.get("LLM_API_KEY", "")
-BASE_URL = os.environ.get("LLM_BASE_URL", "https://api.chatanywhere.tech")
-MODEL = os.environ.get("LLM_MODEL", "gpt-4o-mini")
+def parse_command_to_macro_micro(command: str):
+    """把命令拆分为 (macro, micro)"""
+    parts = command.split(None, 1)
+    macro = parts[0]
+    micro = parts[1] if len(parts) > 1 else "none"
+    return macro, micro
+# =================================
 
-HPA_PATH = os.environ.get("HPA_JSON_PATH", "hpa.json")
-try:
-    hpa = HPA(HPA_PATH)
-except Exception:
-    hpa = HPA()
+API_KEY = "sk-i2GQTkZ4h1XuFaYtPmMEAziCNZNY0zfcNCTQwwhDVy7lSJdp"
+BASE_URL = "https://api.chatanywhere.tech"
+MODEL = "gpt-4o-mini"
 
-# session_id -> list[(macro,micro)]
-session_paths = {}
-
-# --- LLM wrapper ---
-def get_response_from_llm(message: str) -> str:
-    if not API_KEY:
-        print("Warning: LLM_API_KEY not set", file=sys.stderr)
-    client = OpenAI(api_key=API_KEY, base_url=BASE_URL)
+# llm api responses
+def get_response(message):
+    client = OpenAI(
+        api_key=API_KEY,
+        base_url=BASE_URL
+    )
     messages = [
-        {"role": "system",
-         "content": (
-             "You are a shell with system information Linux svr04 3.2.0-4-amd64. "
-             "Simulate bash shell output only."
-         )},
-        {"role": "user", "content": message},
-    ]
+            {
+                "role": "system",
+                "content": (
+                    "You are a shell with system information Linux svr04 3.2.0-4-amd64 "
+                    "#1 SMP Debian 3.2.68-1+deb7u1 x86_64 GNU/Linux with distribution "
+                    "Debian GNU/Linux 8.11 (jessie), now that you need to simulate a "
+                    "bash shell, your output should look as if you executed this command, "
+                    "and you should not output any other text that is not part of the "
+                    "response of this command"
+                ),
+            },
+            {
+                "role": "user",
+                "content": message,
+            },
+        ]
     try:
-        response = client.chat.completions.create(model=MODEL, messages=messages)
+        response = client.chat.completions.create(
+            model=MODEL,
+            messages=messages
+        )
+        print(response.choices[0].message.content)
         return response.choices[0].message.content
     except Exception as e:
-        print("LLM error:", e, file=sys.stderr)
-        return None
+        print(e)
+        return 0
 
-# --- Robust command parsing ---
-def split_commands(cmd: str):
-    result, current, i, in_squote, in_dquote, brace_level = [], '', 0, False, False, 0
-    while i < len(cmd):
-        c = cmd[i]
-        if c == "'" and not in_dquote: in_squote = not in_squote; current += c; i+=1; continue
-        if c == '"' and not in_squote: in_dquote = not in_dquote; current += c; i+=1; continue
-        if c == '{' and not in_squote and not in_dquote: brace_level += 1; current += c; i+=1; continue
-        if c == '}' and not in_squote and not in_dquote: brace_level = max(0, brace_level-1); current+=c;i+=1;continue
-        if not in_squote and not in_dquote and brace_level==0:
-            if cmd[i:i+2] in ['&&','||']: result.append(current.strip()); current=''; i+=2; continue
-            if c in [';', '|']: result.append(current.strip()); current=''; i+=1; continue
-        current += c; i+=1
-    if current.strip(): result.append(current.strip())
-    return result
 
-def parse_command(cmd: str):
-    if not cmd.strip(): return "unknown", "none"
-    s = cmd.strip()
-    while s.startswith('(') and s.endswith(')'): s = s[1:-1].strip()
-    parts = s.split(None, 1)
-    macro = parts[0]
-    micro = parts[1].strip() if len(parts)>1 and parts[1].strip() else "none"
-    return macro, micro
+def run_command(command):
+    # === 新增: HPA阻断逻辑 ===
+    macro, micro = parse_command_to_macro_micro(command)
+    if should_block(macro, micro):
+        return "bash: permission denied\n"
+    # ==========================
 
-# --- Local commands ---
-def run_command_local(command: str):
-    command = command.strip()
-    if not command: return "\n"
-    if command == "uname -a": return "Linux svr04 3.2.0-4-amd64 #1 SMP Debian 3.2.68-1+deb7u1 x86_64 GNU/Linux\n"
-    if command == "lsb_release -a": return ("No LSB modules are available.\nDistributor ID: Debian\nRelease: 8.11\n")
-    if command.startswith("cat"):
-        filename = command.split(None,1)[1].strip() if len(command.split(None,1))>1 else ""
-        try: return open(filename,'r',encoding='utf-8',errors='ignore').read()
-        except: return f"cat: {filename}: No such file or directory\n"
-    if command.startswith("ls"):
-        path = command.split(None,1)[1].strip() if len(command.split(None,1))>1 else "."
-        try: return " ".join(os.listdir(path)) + "\n"
-        except: return f"ls: cannot access {path}: No such file or directory\n"
-    if command.startswith("cd"):
-        path = command.split(None,1)[1].strip() if len(command.split(None,1))>1 else os.path.expanduser('~')
-        try: os.chdir(path); return ""
-        except FileNotFoundError: return f"bash: cd: {path}: No such file or directory\n"
-        except NotADirectoryError: return f"bash: cd: {path}: Not a directory\n"
-    if command == "pwd": return f"{os.getcwd()}\n"
-    if command.startswith("echo"): return command.split(None,1)[1] + "\n" if len(command.split(None,1))>1 else "\n"
-    if command == "exit": return "logout\n"
-    if command == "whoami": return "root\n"
-    return None
+    if command == "uname -a":
+        return "Linux svr04 3.2.0-4-amd64 #1 SMP Debian 3.2.68-1+deb7u1 x86_64 GNU/Linux\n"
+    elif command == "lsb_release -a":
+        return ("No LSB modules are available.\n"
+                "Distributor ID: Debian\n"
+                "Description:    Debian GNU/Linux 8.11 (jessie)\n"
+                "Release:        8.11\n"
+                "Codename:       jessie\n")
+    elif command == "dpkg --get-selections":
+        return ("adduser                                    install\n"
+                "apt                                        install\n"
+                "base-files                                 install\n"
+                "base-passwd                                install\n"
+                "bash                                       install\n"
+                "bsdutils                                   install\n"
+                "coreutils                                  install\n"
+                "dash                                       install\n"
+                "debconf                                    install\n"
+                "debian-archive-keyring                     install\n"
+                "dpkg                                       install\n"
+                "e2fslibs                                   install\n"
+                "e2fsprogs                                  install\n"
+                "findutils                                  install\n"
+                "gcc-4.9-base                               install\n"
+                "gzip                                       install\n"
+                "hostname                                   install\n"
+                "init                                       install\n"
+                "initscripts                                install\n"
+                "insserv                                    install\n"
+                "libc-bin                                   install\n"
+                "libc6                                      install\n"
+                "libncurses5                                install\n"
+                "libpam-modules                             install\n"
+                "libpam-runtime                             install\n"
+                "libpam0g                                   install\n"
+                "login                                      install\n"
+                "lsb-base                                   install\n"
+                "makedev                                    install\n"
+                "mawk                                       install\n"
+                "mount                                      install\n"
+                "ncurses-base                               install\n"
+                "ncurses-bin                                install\n"
+                "perl-base                                  install\n"
+                "sed                                        install\n"
+                "sensible-utils                             install\n"
+                "sysv-rc                                    install\n"
+                "sysvinit                                   install\n"
+                "sysvinit-utils                             install\n"
+                "tar                                        install\n"
+                "util-linux                                 install\n"
+                "zlib1g                                     install\n")
+    elif command == "service --status-all":
+        return ("[ + ]  acpid\n"
+                "[ + ]  cron\n"
+                "[ + ]  dbus\n"
+                "[ + ]  exim4\n"
+                "[ + ]  kmod\n"
+                "[ + ]  networking\n"
+                "[ + ]  rsyslog\n"
+                "[ + ]  ssh\n"
+                "[ + ]  udev\n"
+                "[ - ]  procps\n")
+    elif command.startswith("cat"):
+        filename = command.split(" ")[1]
+        try:
+            with open(filename, 'r') as f:
+                return f.read()
+        except FileNotFoundError:
+            return f"cat: {filename}: No such file or directory\n"
+    elif command.startswith("ls"):
+        command += " "
+        path = command.split(" ")[1]
+        if path == "":
+            path = "."
+        try:
+            return " ".join(os.listdir(path)) + "\n"
+        except FileNotFoundError:
+            return f"ls: cannot access {path}: No such file or directory\n"
+    elif command.startswith("cd"):
+        path = command.split(" ")[1]
+        try:
+            os.chdir(path)
+            return ""
+        except FileNotFoundError:
+            return f"bash: cd: {path}: No such file or directory\n"
+    elif command == "pwd":
+        return f"{os.getcwd()}\n"
+    elif command.startswith("echo"):
+        return command.split(" ", 1)[1] + "\n"
+    elif command == "exit":
+        exit()
+    elif command == "whoami":
+        return "root\n"
+    else:
+        llm_response = get_response(command)
+        if llm_response == 0:
+            command = command.split(" ")[0]
+            return f"bash: {command}: command not found\n"
+        return llm_response + '\n'
 
-def fake_block_response(command: str): return "bash: permission denied\n"
 
-def extract_command_from_amun_log(log_line: str):
-    m = re.search(r'\]#\s+(.*)', log_line)
-    return m.group(1).strip() if m else None
+# 创建模拟的文件和目录结构
+def create_files():
+    os.makedirs(os.path.join('.', 'etc'), exist_ok=True)
+    os.makedirs(os.path.join('.', 'var', 'log'), exist_ok=True)
 
-# --- Flask ---
+    with open(os.path.join('.', 'etc', 'issue'), 'w') as f:
+        f.write(f"Debian GNU/Linux 8 {os.path.sep}n {os.path.sep}l\n")
+
+    with open(os.path.join('.', 'etc', 'motd'), 'w') as f:
+        f.write("The programs included with the Debian GNU/Linux system are free software;\n"
+                "the exact distribution terms for each program are described in the\n"
+                "individual files in /usr/share/doc/*/copyright.\n"
+                "\n"
+                "Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent\n"
+                "permitted by applicable law.\n")
+
+    with open(os.path.join('.', 'etc', 'passwd'), 'w') as f:
+        f.write("root:x:0:0:root:/root:/bin/bash\n"
+                "daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin\n"
+                "bin:x:2:2:bin:/bin:/usr/sbin/nologin\n"
+                "sys:x:3:3:sys:/dev:/usr/sbin/nologin\n"
+                "sync:x:4:65534:sync:/bin:/bin/sync\n"
+                "games:x:5:60:games:/usr/games:/usr/sbin/nologin\n"
+                "man:x:6:12:man:/var/cache/man:/usr/sbin/nologin\n"
+                "lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin\n"
+                "mail:x:8:8:mail:/var/mail:/usr/sbin/nologin\n"
+                "news:x:9:9:news:/var/spool/news:/usr/sbin/nologin\n"
+                "uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin\n"
+                "proxy:x:13:13:proxy:/bin:/usr/sbin/nologin\n"
+                "www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin\n"
+                "backup:x:34:34:backup:/var/backups:/usr/sbin/nologin\n"
+                "list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin\n"
+                "irc:x:39:39:ircd:/var/run/ircd:/usr/sbin/nologin\n"
+                "gnats:x:41:41:Gnats Bug-Reporting System (admin):/var/lib/gnats:/usr/sbin/nologin\n"
+                "nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin\n")
+
+    with open(os.path.join('.', 'etc', 'shadow'), 'w') as f:
+        f.write("root:*:17837:0:99999:7:::\n"
+                "daemon:*:17837:0:99999:7:::\n"
+                "bin:*:17837:0:99999:7:::\n"
+                "sys:*:17837:0:99999:7:::\n"
+                "sync:*:17837:0:99999:7:::\n"
+                "games:*:17837:0:99999:7:::\n"
+                "man:*:17837:0:99999:7:::\n"
+                "lp:*:17837:0:99999:7:::\n"
+                "mail:*:17837:0:99999:7:::\n"
+                "news:*:17837:0:99999:7:::\n"
+                "uucp:*:17837:0:99999:7:::\n"
+                "proxy:*:17837:0:99999:7:::\n"
+                "www-data:*:17837:0:99999:7:::\n"
+                "backup:*:17837:0:99999:7:::\n"
+                "list:*:17837:0:99999:7:::\n"
+                "irc:*:17837:0:99999:7:::\n"
+                "gnats:*:17837:0:99999:7:::\n"
+                "nobody:*:17837:0:99999:7:::\n")
+
+    os.makedirs(os.path.join('.', 'etc', 'network'), exist_ok=True)
+    with open(os.path.join('.', 'etc', 'network', 'interfaces'), 'w') as f:
+        f.write("# This file describes the network interfaces available on your system\n"
+                "# and how to activate them. For more information, see interfaces(5).\n"
+                "\n"
+                "# The loopback network interface\n"
+                "auto lo\n"
+                "iface lo inet loopback\n"
+                "\n"
+                "# The primary network interface\n"
+                "allow-hotplug eth0\n"
+                "iface eth0 inet dhcp\n")
+
+    with open(os.path.join('.', 'etc', 'resolv.conf'), 'w') as f:
+        f.write("nameserver 8.8.8.8\n"
+                "nameserver 8.8.4.4\n")
+
+
 app = Flask(__name__)
 
 @app.route('/execute', methods=['GET'])
 def execute_command_get():
-    command = request.args.get('command', '')
-    session = request.args.get('session', 'unknown-session')
-    extracted_cmd = extract_command_from_amun_log(command)
-    if extracted_cmd: command = extracted_cmd
+    command = request.args.get('command')
+    output = run_command(command)
+    return output
 
-    subs = split_commands(command)
-    active = subs[-1] if subs else command
-    macro, micro = parse_command(active)
+def test(command):
+    url = "http://127.0.0.1:12345/execute"
+    params = {"command": command}
+    response = requests.get(url, params=params)
+    print(response.text)
 
-    sp = session_paths.setdefault(session, [])
-    sp.append((macro, micro))
-
-    # --- HPA 阻断判断 ---
-    decision, debug = should_block(hpa, session, sp)
-    print("HPA debug:", json.dumps(debug, ensure_ascii=False))
-
-    if decision:
-        return fake_block_response(command)
-
-    local = run_command_local(command)
-    if local is not None:
-        return local
-
-    llm_out = get_response_from_llm(command)
-    if llm_out is None:
-        return f"bash: {command.split()[0]}: command not found\n"
-    return llm_out + "\n"
-
-if __name__ == '__main__':
-    port = int(os.environ.get('LLM_SHELL_PORT', '12345'))
-    print(f"Starting llm_shell_amun on 0.0.0.0:{port}")
-    app.run(host='127.0.0.1', port=port)
+if __name__ == "__main__":
+    app.run(host='127.0.0.1', port=12345)
