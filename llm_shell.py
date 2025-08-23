@@ -296,26 +296,26 @@ def parse_command(cmd: str):
     return result
 
 
-def execute_with_hpa(cmd: str, dialog_id: str):
-    if dialog_id not in session_map:
-        session_map[dialog_id] = str(uuid.uuid4())
-    session_id = session_map[dialog_id]
+def execute_with_hpa(session_id, commands):
+    from hpa_manager import HPA
+    from blocker import should_block
 
-    commands = split_commands(cmd)
+    hpa = HPA()
     output = ""
 
     for position, command in enumerate(commands):
-        macro, micro = parse_command(command)
+        parsed_cmds = parse_command(command)  # [(macro, micro), ...]
+        
+        for macro, micro in parsed_cmds:
+            matched = hpa.match_hpa(position, macro, micro)
+            hpa.update_src_and_dst(session_id, src=0, dst=position, blocked=False)
 
-        matched = hpa.match_hpa(position, macro, micro)
-        hpa.update_src_and_dst(session_id, src=0, dst=position, blocked=False)
-
-        if should_block(hpa, session_id, [(position, macro, micro)], src=0, dst=position, matched=matched):
-            output += "bash: permission denied\n"
-        else:
-            if not matched:
-                hpa.update_hpa(position, macro, micro)
-            output += run_command(command)
+            if should_block(hpa, session_id, [(position, macro, micro)], src=0, dst=position, matched=matched):
+                output += "bash: permission denied\n"
+            else:
+                if not matched:
+                    hpa.update_hpa(position, macro, micro)
+                output += run_command(command)
 
     return output
 
