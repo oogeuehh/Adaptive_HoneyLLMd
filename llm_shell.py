@@ -31,19 +31,17 @@ def process_command(session_id, command):
     return session.should_block()
 
 def handle_command(session_id, command):
-    # 处理 HPA / session
+    # HPA / session
     should_block_flag = process_command(session_id, command)
     
-    # 获取当前 session 对象
     session = sessions[session_id]
 
-    # 获取调试信息
     current_position = getattr(session, "current_node_id", None)
     payoff = session.get_payoff()
     matched = session.matched
     process_vector = session.process_vector
     
-    # 仅打印到控制台
+    # console for debug
     print(
         f"[DEBUG] Command: {command}\n"
         f"[DEBUG] matched: {matched}\n"
@@ -53,7 +51,7 @@ def handle_command(session_id, command):
         f"[DEBUG] process_vector: {process_vector}\n"
     )
     
-    # 返回给客户端的内容不包含 debug
+    # blcok response
     if should_block_flag:
         return "permission denied\n"
     else:
