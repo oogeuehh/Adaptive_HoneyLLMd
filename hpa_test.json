@@ -1,0 +1,54 @@
+{
+    "0": {
+        "cat": {
+            "/proc/cpuinfo": {
+                "count": 2,
+                "prob": 0.5,
+                "child": "1"
+            },
+            "/etc/passwd": {
+                "count": 1,
+                "prob": 0.25,
+                "child": "1b"
+            }
+        }
+    },
+    "1": {
+        "grep": {
+            "root": {
+                "count": 1,
+                "prob": 1.0,
+                "child": "2"
+            }
+        }
+    },
+    "1b": {
+        "wc": {
+            "-l": {
+                "count": 1,
+                "prob": 1.0,
+                "child": "2b"
+            }
+        }
+    },
+    "2": {
+        "exit": {
+            "none": {
+                "count": 1,
+                "prob": 1.0,
+                "child": "3"
+            }
+        }
+    },
+    "2b": {
+        "exit": {
+            "none": {
+                "count": 1,
+                "prob": 1.0,
+                "child": "3b"
+            }
+        }
+    },
+    "3": {},
+    "3b": {}
+}
